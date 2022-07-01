@@ -3,6 +3,13 @@
   "version": "16.0.0",
   "private": true,
   "description": "Проект «{{projectTitle}}» от HTML Academy",
+  "browserslist": [
+    "last 2 versions",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all",
+    "not < 0.25%"
+  ],
   "scripts": {
     "eslint": "eslint src/",
     "test": "npm run eslint",
@@ -13,6 +20,7 @@
     "@babel/core": "7.17.9",
     "@babel/preset-env": "7.16.11",
     "babel-loader": "8.2.4",
+    "copy-webpack-plugin": "^11.0.0",
     "eslint": "7.32.0",
     "eslint-config-htmlacademy": "5.0.0",
     "webpack": "5.72.0",
