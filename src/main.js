@@ -1,4 +1,4 @@
-import { renderElement, RenderPosition } from "./render";
+import { render, replace, RenderPosition } from "./render";
 import { generateEvent } from "./mock/event";
 import RouteInfoView from "./view/route-info-view";
 import NavigationMenuView from "./view/navigation-menu-view";
@@ -6,11 +6,11 @@ import FilterFormView from "./view/filter-form-view";
 import CreationFormView from "./view/creation-form-view";
 import RoutePointListView from "./view/route-point-list-view";
 import RoutePointView from "./view/route-point-view";
-import EditFormView from "./view/edit-form-view";
 import SortFormView from "./view/sort-form-view";
 import OfferTitleView from "./view/offers-title-view";
 import OffersView from "./view/offers-view";
 import OfferView from "./view/offer-view";
+import RoutePointEditView from "./view/route-point-edit-view";
 
 const EVENT_COUNT = 16;
 const events = new Array(EVENT_COUNT)
@@ -19,57 +19,67 @@ const events = new Array(EVENT_COUNT)
   .sort((a, b) => a.startDate - b.startDate);
 
 const tripMainElement = document.querySelector(".trip-main");
-renderElement(
+render(
   tripMainElement,
-  new RouteInfoView(events).element,
+  new RouteInfoView(events),
   RenderPosition.AFTERBEGIN
 );
 
 const navigationMenuWrapperElement = document.querySelector(
   ".trip-controls__navigation"
 );
-renderElement(navigationMenuWrapperElement, new NavigationMenuView().element);
+render(navigationMenuWrapperElement, new NavigationMenuView());
 
 const filterFormWrapperElement = document.querySelector(
   ".trip-controls__filters"
 );
-renderElement(filterFormWrapperElement, new FilterFormView().element);
+render(filterFormWrapperElement, new FilterFormView());
 
 const tripEventsElement = document.querySelector(".trip-events");
-renderElement(tripEventsElement, new SortFormView().element);
-renderElement(tripEventsElement, new CreationFormView().element);
+render(tripEventsElement, new SortFormView());
+render(tripEventsElement, new CreationFormView());
 
 const routePointListView = new RoutePointListView();
-renderElement(tripEventsElement, routePointListView.element);
+render(tripEventsElement, routePointListView);
 
-events.forEach((event, index) => {
-  const routePointView = new RoutePointView(event);
-  renderElement(routePointListView.element, routePointView.element);
-
-  if (index == 0) {
-    renderElement(routePointListView.element, new EditFormView().element);
-  }
-
-  const offers = event.offer.offers.filter((it) => it.checked);
+const renderOffers = (container, offers) => {
   if (offers.length > 0) {
-    const favoriteButtonElement = routePointView.element.querySelector(
-      ".event__favorite-btn"
-    );
-    renderElement(
+    const favoriteButtonElement =
+      container.element.querySelector(`.event__favorite-btn`);
+
+    render(
       favoriteButtonElement,
-      new OfferTitleView().element,
+      new OfferTitleView(),
       RenderPosition.BEFOREBEGIN
     );
 
     const offersView = new OffersView();
-    renderElement(
+    render(
       favoriteButtonElement,
-      offersView.element,
+      offersView,
       RenderPosition.BEFOREBEGIN
     );
 
     offers.map((offer) => {
-      renderElement(offersView.element, new OfferView(offer).element);
+      render(offersView, new OfferView(offer));
     });
   }
+};
+
+events.forEach((event) => {
+  const routePointView = new RoutePointView(event);
+  render(routePointListView, routePointView);
+
+  const offers = event.offer.offers.filter((it) => it.checked);
+  renderOffers(routePointView, offers);
+
+  const routePointEditView = new RoutePointEditView(event);
+
+  routePointView.setRollupClickHandler(() => {
+    replace(routePointEditView, routePointView);
+  });
+
+  routePointEditView.setRollupClickHandler(() => {
+    replace(routePointView, routePointEditView);
+  });
 });

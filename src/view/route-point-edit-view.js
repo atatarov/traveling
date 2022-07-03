@@ -1,6 +1,6 @@
-import AbstractView from "./abstract-view";
+import RoutePointAbstractView from "./route-point-abstract-view";
 
-export const createEditFormTemplate = () =>
+export const createRoutePointEditTemplate = ({price}) =>
   `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
@@ -228,7 +228,7 @@ export const createEditFormTemplate = () =>
           id="event-price-1"
           type="text"
           name="event-price"
-          value="160"
+          value=${price}
         />
       </div>
 
@@ -337,8 +337,8 @@ export const createEditFormTemplate = () =>
     </section>
   </form>`;
 
-export default class EditFormView extends AbstractView {
+export default class RoutePointEditView extends RoutePointAbstractView {
   get template() {
-    return createEditFormTemplate();
+    return createRoutePointEditTemplate(this._event);
   }
 }

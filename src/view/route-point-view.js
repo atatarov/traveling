@@ -5,7 +5,7 @@ import {
   humanizeDateSpread,
 } from "../utils";
 
-import AbstractView from "./abstract-view";
+import RoutePointAbstractView from "./route-point-abstract-view";
 
 export const createRoutePointTemplate = ({
   offerType,
@@ -77,16 +77,8 @@ export const createRoutePointTemplate = ({
   );
 };
 
-export default class RoutePointView extends AbstractView {
-  #event = null;
-
-  constructor(event) {
-    super();
-
-    this.#event = event;
-  }
-
+export default class RoutePointView extends RoutePointAbstractView {
   get template() {
-    return createRoutePointTemplate(this.#event);
+    return createRoutePointTemplate(this._event);
   }
 }
