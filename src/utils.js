@@ -62,3 +62,12 @@ export const formatShortDate = (date, isOnlyDay) => {
   const day = date.getDate();
   return `${month} ${day}`.trim();
 };
+
+export const formatDatePair = (firstDate, secondDate) => {
+  const firstShortDate = formatShortDate(firstDate);
+
+  const isOnlyDay = firstDate.getMonth() === secondDate.getMonth();
+  const secondShortDate = formatShortDate(secondDate, isOnlyDay);
+
+  return `${firstShortDate}&nbsp;&mdash;&nbsp;${secondShortDate}`;
+};

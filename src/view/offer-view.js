@@ -1,3 +1,5 @@
+import AbstractView from "./abstract-view";
+
 export const createOfferTemplate = ({ title, price }) => {
   return (
     `<li class="event__offer">
@@ -7,3 +9,17 @@ export const createOfferTemplate = ({ title, price }) => {
     </li>`
   );
 };
+
+export default class OfferView extends AbstractView {
+  #offer = null;
+
+  constructor(offer) {
+    super();
+
+    this.#offer = offer;
+  }
+
+  get template() {
+    return createOfferTemplate(this.#offer);
+  }
+}

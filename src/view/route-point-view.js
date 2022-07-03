@@ -1,9 +1,14 @@
-import { formatShortDate, upCaseFirst, humanizeTime, humanizeDateSpread } from "../utils";
-import { createOffersTemplate } from "./offers";
+import {
+  formatShortDate,
+  upCaseFirst,
+  humanizeTime,
+  humanizeDateSpread,
+} from "../utils";
+
+import AbstractView from "./abstract-view";
 
 export const createRoutePointTemplate = ({
   offerType,
-  offer,
   place,
   startDate,
   finishDate,
@@ -16,7 +21,7 @@ export const createRoutePointTemplate = ({
   }`;
 
   return (
-    `<li class="trip-events__item">
+   `<li class="trip-events__item">
       <div class="event">
         <time class="event__date" datetime="2019-03-18">
           ${shortDate}
@@ -34,23 +39,26 @@ export const createRoutePointTemplate = ({
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="2019-03-18T12:25">
-            ${humanizeTime(startDate)}
+              ${humanizeTime(startDate)}
             </time>
             &mdash;
             <time class="event__end-time" datetime="2019-03-18T13:35">
-            ${humanizeTime(finishDate)}
+              ${humanizeTime(finishDate)}
             </time>
           </p>
-          <p class="event__duration">${humanizeDateSpread(startDate, finishDate)}</p>
+          <p class="event__duration">
+            ${humanizeDateSpread(startDate, finishDate)}
+          </p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${price}</span>
         </p>
-        <h4 class="visually-hidden">Offers:</h4>
-        ${offer.offers.length > 0 
-          ? `<h4 class="visually-hidden">Offers:</h4> ${createOffersTemplate(offer.offers)}`
-          : ``}
-        <button class="event__favorite-btn ${isFavorite ? `event__favorite-btn--active`: ``}" type="button">
+        <button
+          class="event__favorite-btn ${
+          isFavorite ? `event__favorite-btn--active` : ``
+        }"
+          type="button"
+        >
           <span class="visually-hidden">Add to favorite</span>
           <svg
             class="event__favorite-icon"
@@ -68,3 +76,17 @@ export const createRoutePointTemplate = ({
     </li>`
   );
 };
+
+export default class RoutePointView extends AbstractView {
+  #event = null;
+
+  constructor(event) {
+    super();
+
+    this.#event = event;
+  }
+
+  get template() {
+    return createRoutePointTemplate(this.#event);
+  }
+}

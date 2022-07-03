@@ -1,4 +1,6 @@
-export const createCreationFormTemplate = () =>
+import AbstractView from "./abstract-view";
+
+export const createEditFormTemplate = () =>
   `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
@@ -182,7 +184,7 @@ export const createCreationFormTemplate = () =>
           id="event-destination-1"
           type="text"
           name="event-destination"
-          value="Geneva"
+          value="Chamonix"
           list="destination-list-1"
         />
         <datalist id="destination-list-1">
@@ -201,7 +203,7 @@ export const createCreationFormTemplate = () =>
           id="event-start-time-1"
           type="text"
           name="event-start-time"
-          value="19/03/19 00:00"
+          value="18/03/19 12:25"
         />
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">
@@ -212,7 +214,7 @@ export const createCreationFormTemplate = () =>
           id="event-end-time-1"
           type="text"
           name="event-end-time"
-          value="19/03/19 00:00"
+          value="18/03/19 13:35"
         />
       </div>
 
@@ -226,7 +228,7 @@ export const createCreationFormTemplate = () =>
           id="event-price-1"
           type="text"
           name="event-price"
-          value=""
+          value="160"
         />
       </div>
 
@@ -234,7 +236,10 @@ export const createCreationFormTemplate = () =>
         Save
       </button>
       <button class="event__reset-btn" type="reset">
-        Cancel
+        Delete
+      </button>
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
       </button>
     </header>
     <section class="event__details">
@@ -255,7 +260,7 @@ export const createCreationFormTemplate = () =>
             <label class="event__offer-label" for="event-offer-luggage-1">
               <span class="event__offer-title">Add luggage</span>
               &plus;&euro;&nbsp;
-              <span class="event__offer-price">30</span>
+              <span class="event__offer-price">50</span>
             </label>
           </div>
 
@@ -268,9 +273,9 @@ export const createCreationFormTemplate = () =>
               checked
             />
             <label class="event__offer-label" for="event-offer-comfort-1">
-              <span class="event__offer-title">Switch to comfort class</span>
+              <span class="event__offer-title">Switch to comfort</span>
               &plus;&euro;&nbsp;
-              <span class="event__offer-price">100</span>
+              <span class="event__offer-price">80</span>
             </label>
           </div>
 
@@ -323,40 +328,17 @@ export const createCreationFormTemplate = () =>
           Destination
         </h3>
         <p class="event__destination-description">
-          Geneva is a city in Switzerland that lies at the southern tip of
-          expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura
-          mountains, the city has views of dramatic Mont Blanc.
+          Chamonix-Mont-Blanc (usually shortened to Chamonix) is a resort area
+          near the junction of France, Switzerland and Italy. At the base of
+          Mont Blanc, the highest summit in the Alps, it's renowned for its
+          skiing.
         </p>
-
-        <div class="event__photos-container">
-          <div class="event__photos-tape">
-            <img
-              class="event__photo"
-              src="img/photos/1.jpg"
-              alt="Event photo"
-            />
-            <img
-              class="event__photo"
-              src="img/photos/2.jpg"
-              alt="Event photo"
-            />
-            <img
-              class="event__photo"
-              src="img/photos/3.jpg"
-              alt="Event photo"
-            />
-            <img
-              class="event__photo"
-              src="img/photos/4.jpg"
-              alt="Event photo"
-            />
-            <img
-              class="event__photo"
-              src="img/photos/5.jpg"
-              alt="Event photo"
-            />
-          </div>
-        </div>
       </section>
     </section>
   </form>`;
+
+export default class EditFormView extends AbstractView {
+  get template() {
+    return createEditFormTemplate();
+  }
+}

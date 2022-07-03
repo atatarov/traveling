@@ -1,26 +1,11 @@
-import { formatShortDate } from "../utils";
+import { formatDatePair } from "../utils";
 
-Array.prototype.first = function () {
-  return this[0];
-};
-
-Array.prototype.last = function () {
-  return this[this.length - 1];
-};
-
-export const formatDatePair = (firstDate, secondDate) => {
-  const firstShortDate = formatShortDate(firstDate);
-
-  const isOnlyDay = firstDate.getMonth() === secondDate.getMonth();
-  const secondShortDate = formatShortDate(secondDate, isOnlyDay);
-
-  return `${firstShortDate}&nbsp;&mdash;&nbsp;${secondShortDate}`;
-};
+import AbstractView from "./abstract-view";
 
 export const createRouteInfoTemplate = (events) => {
   const { places, finishDate, price } = events.reduce(
     (result, event) => {
-      if (result.places.last() !== event.place.name) {
+      if (result.places[result.places.length - 1] !== event.place.name) {
         result.places.push(event.place.name);
       }
 
@@ -43,12 +28,11 @@ export const createRouteInfoTemplate = (events) => {
     }
   );
 
-  const startDate = events.first().startDate;
+  const startDate = events[0].startDate;
 
   const datePair = formatDatePair(startDate, finishDate);
 
-  return (
-    `<section class="trip-main__trip-info  trip-info">
+  return `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
         <h1 class="trip-info__title">${places.join(` &mdash; `)}</h1>
 
@@ -59,6 +43,19 @@ export const createRouteInfoTemplate = (events) => {
         Total: &euro;&nbsp;
         <span class="trip-info__cost-value">${price}</span>
       </p>
-    </section>`
-  );
+    </section>`;
 };
+
+export default class RouteInfoView extends AbstractView {
+  #events = null;
+
+  constructor(events) {
+    super();
+
+    this.#events = events;
+  }
+
+  get template() {
+    return createRouteInfoTemplate(this.#events);
+  }
+}

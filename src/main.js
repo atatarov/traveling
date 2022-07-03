@@ -1,13 +1,16 @@
-import { RenderPosition, renderTemplate } from "./render";
-import { createCreationFormTemplate } from "./view/creation-form";
-import { createEditFormTemplate } from "./view/edit-form";
-import { createFilterFormTemplate } from "./view/filter-form";
-import { createNavigationMenuTemplate } from "./view/navigation-menu";
-import { createRoutePointTemplate } from "./view/route-point";
-import { createRoutePointListTemplate } from "./view/route-point-list";
-import { createSortFormTemplate } from "./view/sort-form";
-import { createRouteInfoTemplate } from "./view/route-info";
+import { renderElement, RenderPosition } from "./render";
 import { generateEvent } from "./mock/event";
+import RouteInfoView from "./view/route-info-view";
+import NavigationMenuView from "./view/navigation-menu-view";
+import FilterFormView from "./view/filter-form-view";
+import CreationFormView from "./view/creation-form-view";
+import RoutePointListView from "./view/route-point-list-view";
+import RoutePointView from "./view/route-point-view";
+import EditFormView from "./view/edit-form-view";
+import SortFormView from "./view/sort-form-view";
+import OfferTitleView from "./view/offers-title-view";
+import OffersView from "./view/offers-view";
+import OfferView from "./view/offer-view";
 
 const EVENT_COUNT = 16;
 const events = new Array(EVENT_COUNT)
@@ -16,39 +19,57 @@ const events = new Array(EVENT_COUNT)
   .sort((a, b) => a.startDate - b.startDate);
 
 const tripMainElement = document.querySelector(".trip-main");
-const routeInfoTemplate = createRouteInfoTemplate(events);
-renderTemplate(tripMainElement, routeInfoTemplate, RenderPosition.AFTERBEGIN);
+renderElement(
+  tripMainElement,
+  new RouteInfoView(events).element,
+  RenderPosition.AFTERBEGIN
+);
 
 const navigationMenuWrapperElement = document.querySelector(
   ".trip-controls__navigation"
 );
-const navigationMenuTemplate = createNavigationMenuTemplate();
-renderTemplate(navigationMenuWrapperElement, navigationMenuTemplate);
+renderElement(navigationMenuWrapperElement, new NavigationMenuView().element);
 
 const filterFormWrapperElement = document.querySelector(
   ".trip-controls__filters"
 );
-const filterFormMenuTemplate = createFilterFormTemplate();
-renderTemplate(filterFormWrapperElement, filterFormMenuTemplate);
+renderElement(filterFormWrapperElement, new FilterFormView().element);
 
 const tripEventsElement = document.querySelector(".trip-events");
-const sortFormMenuTemplate = createSortFormTemplate();
-renderTemplate(tripEventsElement, sortFormMenuTemplate);
+renderElement(tripEventsElement, new SortFormView().element);
+renderElement(tripEventsElement, new CreationFormView().element);
 
-const creationFormTemplate = createCreationFormTemplate();
-renderTemplate(tripEventsElement, creationFormTemplate);
-
-const routePointListTemplate = createRoutePointListTemplate();
-renderTemplate(tripEventsElement, routePointListTemplate);
-
-const routePointListElement =
-  tripEventsElement.querySelector(".trip-events__list");
+const routePointListView = new RoutePointListView();
+renderElement(tripEventsElement, routePointListView.element);
 
 events.forEach((event, index) => {
-  const routePointTemplate = createRoutePointTemplate(event);
-  renderTemplate(routePointListElement, routePointTemplate);
+  const routePointView = new RoutePointView(event);
+  renderElement(routePointListView.element, routePointView.element);
+
   if (index == 0) {
-    const editFormTemplate = createEditFormTemplate();
-    renderTemplate(routePointListElement, editFormTemplate);
+    renderElement(routePointListView.element, new EditFormView().element);
+  }
+
+  const offers = event.offer.offers.filter((it) => it.checked);
+  if (offers.length > 0) {
+    const favoriteButtonElement = routePointView.element.querySelector(
+      ".event__favorite-btn"
+    );
+    renderElement(
+      favoriteButtonElement,
+      new OfferTitleView().element,
+      RenderPosition.BEFOREBEGIN
+    );
+
+    const offersView = new OffersView();
+    renderElement(
+      favoriteButtonElement,
+      offersView.element,
+      RenderPosition.BEFOREBEGIN
+    );
+
+    offers.map((offer) => {
+      renderElement(offersView.element, new OfferView(offer).element);
+    });
   }
 });

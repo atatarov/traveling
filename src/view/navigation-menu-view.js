@@ -1,3 +1,5 @@
+import AbstractView from "./abstract-view";
+
 export const createNavigationMenuTemplate = () =>
   `<nav class="trip-controls__trip-tabs  trip-tabs">
     <a class="trip-tabs__btn  trip-tabs__btn--active" href="#">
@@ -7,3 +9,9 @@ export const createNavigationMenuTemplate = () =>
       Stats
     </a>
   </nav>`;
+
+export default class NavigationMenuView extends AbstractView {
+  get template() {
+    return createNavigationMenuTemplate();
+  }
+}
