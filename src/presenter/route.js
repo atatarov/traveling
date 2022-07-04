@@ -1,3 +1,4 @@
+import { updateItem } from "../common";
 import { render, RenderPosition } from "../render";
 import CreationFormView from "../view/creation-form-view";
 import FilterFormView from "../view/filter-form-view";
@@ -16,7 +17,7 @@ export default class RoutePresenter {
   #routePointListView = new RoutePointListView();
 
   #events = null;
-  #routePoints = [];
+  #routePointPresenters = new Map();
 
   init = (events) => {
     this.#events = events;
@@ -67,10 +68,23 @@ export default class RoutePresenter {
   };
 
   #renderRoutePoints = (events) => {
-    this.#routePoints = events.map((event) => {
-      const routePoint = new RoutePointPresenter(this.#routePointListView);
-      routePoint.init(event);
-      return routePoint;
+    events.forEach((event) => {
+      const routePointPresenter = new RoutePointPresenter(
+        this.#routePointListView,
+        this.#handleRoutePointChange,
+        this.#handleModeChange
+      );
+      routePointPresenter.init(event);
+      this.#routePointPresenters.set(event.id, routePointPresenter);
     });
+  };
+
+  #handleRoutePointChange = (updatedEvent) => {
+    this.#events = updateItem(this.#events, updatedEvent);
+    this.#routePointPresenters.get(updatedEvent.id).init(updatedEvent);
+  };
+
+  #handleModeChange = () => {
+    this.#routePointPresenters.forEach((presenter) => presenter.resetView());
   };
 }

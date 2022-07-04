@@ -1,5 +1,6 @@
 import { getRandomInteger, getRandomDate } from "../utils.js";
 import { generatePlace } from "../mock/place.js";
+import { nanoid } from "nanoid";
 
 export const offerTypes = [
   { name: `taxi`, iconURL: `img/icons/taxi.png`, action: `to` },
@@ -51,7 +52,7 @@ export const generateEvent = () => {
   const startDate = getRandomDate(today, deadline);
   const finishDate = getRandomDate(startDate, new Date());
   return {
-    id: new Date() + Math.random(),
+    id: nanoid(),
     offerType,
     offer,
     place: generatePlace(),

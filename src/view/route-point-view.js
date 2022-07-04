@@ -81,4 +81,16 @@ export default class RoutePointView extends RoutePointAbstractView {
   get template() {
     return createRoutePointTemplate(this._event);
   }
+
+  setFavoriteClickHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+    this.element
+      .querySelector(".event__favorite-btn")
+      .addEventListener("click", this.#favoriteClickHandler);
+  };
+
+  #favoriteClickHandler = (event) => {
+    event.preventDefault();
+    this._callback.favoriteClick();
+  };
 }
