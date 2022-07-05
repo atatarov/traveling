@@ -28,7 +28,7 @@ export default class RoutePresenter {
     this.#renderNavigationMenu();
     this.#renderFilterForm();
     this.#renderSortForm();
-    this.#renderCreationForm();
+    // this.#renderCreationForm();
     this.#renderRoutePointList();
     this.#renderRoutePoints(events);
   };
@@ -80,6 +80,7 @@ export default class RoutePresenter {
   };
 
   #handleRoutePointChange = (updatedEvent) => {
+    console.log(updatedEvent)
     this.#events = updateItem(this.#events, updatedEvent);
     this.#routePointPresenters.get(updatedEvent.id).init(updatedEvent);
   };

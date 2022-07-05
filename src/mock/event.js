@@ -7,13 +7,18 @@ export const offerTypes = [
   { name: `bus`, iconURL: `img/icons/bus.png`, action: `to` },
   { name: `train`, iconURL: `img/icons/train.png`, action: `to` },
   { name: `ship`, iconURL: `img/icons/ship.png`, action: `to` },
-  { name: `transport`, iconURL: `img/icons/transport.png`, action: `to` },
   { name: `drive`, iconURL: `img/icons/drive.png`, action: `to` },
   { name: `flight`, iconURL: `img/icons/flight.png`, action: `to` },
   { name: `check-in`, iconURL: `img/icons/check-in.png`, action: `in` },
   { name: `sightseeing`, iconURL: `img/icons/sightseeing.png`, action: `in` },
   { name: `restaurant`, iconURL: `img/icons/restaurant.png`, action: `in` },
 ];
+
+export const getOfferTypeByName = (name) => {
+  return offerTypes.find((item) => {
+    return name === item.name;
+  });
+};
 
 const eventOffers = [
   { id: 1, title: `Add luggage`, price: 30 },

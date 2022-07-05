@@ -42,6 +42,7 @@ export default class RoutePointPresenter {
     this.#handleRouteRollupClick();
     this.#handleRouteEditRollupClick();
     this.#handleFavoriteClick();
+    this.#handleSaveClick();
 
     if (prevRoutePoint === null || prevRoutePointEdit === null) {
       this.#renderRoutePoint(event);
@@ -123,8 +124,16 @@ export default class RoutePointPresenter {
     });
   };
 
+  #handleSaveClick = () => {
+    this.#routePointEdit.setSaveButtonClickHandler((data) => {
+      this.#changeData(data);
+      this.#replaceEditToDefault();
+    });
+  };
+
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#routePointEdit.reset(this.#event);
       this.#replaceEditToDefault();
     }
   };
