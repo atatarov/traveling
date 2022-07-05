@@ -3,7 +3,7 @@ import {
   upCaseFirst,
   humanizeTime,
   humanizeDateSpread,
-} from "../utils";
+} from "../utils/utils";
 
 import RoutePointAbstractView from "./route-point-abstract-view";
 

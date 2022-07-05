@@ -1,4 +1,4 @@
-import { getRandomInteger } from "../utils";
+import { getRandomInteger } from "../utils/utils";
 
 export const NAME_PLACES = [
   `Tbilisi`,

@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { getRandomInteger } from "../utils";
+import { getRandomInteger } from "../utils/utils";
 
 export const offersByType = {
   taxi: {

@@ -1,6 +1,6 @@
 import { getOfferTypeByName, offerTypes } from "../mock/event";
 import { offersByType } from "../mock/offers";
-import { upCaseFirst } from "../utils";
+import { upCaseFirst } from "../utils/utils";
 import SmartView from "./smart-view";
 
 const BLANK_EVENT = {
@@ -253,6 +253,14 @@ export default class RoutePointEditView extends SmartView {
       .addEventListener("submit", this.#saveButtonHandler);
   };
 
+  setDeleteButtonClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+
+    this.element
+      .querySelector(".event__reset-btn")
+      .addEventListener("click", this.#deleteButtonHandler);
+  };
+
   #rollupClickHandler = (event) => {
     event.preventDefault();
     this._callback.rollupClick();
@@ -261,6 +269,13 @@ export default class RoutePointEditView extends SmartView {
   #saveButtonHandler = (event) => {
     event.preventDefault();
     this._callback.saveClick(RoutePointEditView.parseStateToEvent(this._state));
+  };
+
+  #deleteButtonHandler = (event) => {
+    event.preventDefault();
+    this._callback.deleteClick(
+      RoutePointEditView.parseStateToEvent(this._state)
+    );
   };
 
   #setInnerHandlers = () => {
@@ -282,6 +297,7 @@ export default class RoutePointEditView extends SmartView {
     this.#setInnerHandlers();
     this.setRollupClickHandler(this._callback.rollupClick);
     this.setSaveButtonClickHandler(this._callback.saveClick);
+    this.setDeleteButtonClickHandler(this._callback.deleteClick)
   };
 
   static parseEventToState = (event) => {

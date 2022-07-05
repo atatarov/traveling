@@ -1,4 +1,4 @@
-import { MONTHS } from "./const.js";
+import { MONTHS } from "../const.js";
 // Функция из интернета по генерации случайного числа из диапазона
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
 export const getRandomInteger = (a = 0, b = 1) => {

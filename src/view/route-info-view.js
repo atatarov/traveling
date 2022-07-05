@@ -1,5 +1,4 @@
-import { formatDatePair } from "../utils";
-
+import { formatDatePair } from "../utils/utils";
 import AbstractView from "./abstract-view";
 
 export const createRouteInfoTemplate = (events) => {
@@ -32,7 +31,8 @@ export const createRouteInfoTemplate = (events) => {
 
   const datePair = formatDatePair(startDate, finishDate);
 
-  return `<section class="trip-main__trip-info  trip-info">
+  return (
+   `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
         <h1 class="trip-info__title">${places.join(` &mdash; `)}</h1>
 
@@ -43,7 +43,8 @@ export const createRouteInfoTemplate = (events) => {
         Total: &euro;&nbsp;
         <span class="trip-info__cost-value">${price}</span>
       </p>
-    </section>`;
+    </section>`
+  );
 };
 
 export default class RouteInfoView extends AbstractView {

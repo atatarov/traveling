@@ -1,4 +1,4 @@
-import { getRandomInteger, getRandomDate } from "../utils.js";
+import { getRandomInteger, getRandomDate } from "../utils/utils.js";
 import { generatePlace } from "../mock/place.js";
 import { nanoid } from "nanoid";
 

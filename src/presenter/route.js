@@ -1,41 +1,100 @@
-import { updateItem } from "../common";
-import { render, RenderPosition } from "../render";
+import { remove, render, RenderPosition } from "../render";
+import { UpdateType, UserAction } from "../const";
 import CreationFormView from "../view/creation-form-view";
 import FilterFormView from "../view/filter-form-view";
 import NavigationMenuView from "../view/navigation-menu-view";
-import RouteInfoView from "../view/route-info-view";
 import RoutePointListView from "../view/route-point-list-view";
 import SortFormView from "../view/sort-form-view";
 import RoutePointPresenter from "./route-point";
+import RouteInfoPresenter from "./route-info";
+import AddButtonView from "../view/add-button-view";
 
 export default class RoutePresenter {
-  #routeInfoView = null;
+  #routeModel = null;
   #navigationMenuView = new NavigationMenuView();
   #filterFormView = new FilterFormView();
   #sortFormView = new SortFormView();
   #creationFormView = new CreationFormView();
   #routePointListView = new RoutePointListView();
+  #addButtonView = new AddButtonView();
 
-  #events = null;
   #routePointPresenters = new Map();
+  #routeInfoPresenter = null;
 
-  init = (events) => {
-    this.#events = events;
+  constructor(model) {
+    this.#routeModel = model;
 
-    this.#routeInfoView = new RouteInfoView(events);
+    this.#routeModel.addObserver(this.#handleModelEvent);
+  }
 
-    this.#renderRouteInfo();
+  get events() {
+    return this.#routeModel.events;
+  }
+
+  init = () => {
+    this.#routeInfoPresenter = new RouteInfoPresenter();
+
     this.#renderNavigationMenu();
     this.#renderFilterForm();
     this.#renderSortForm();
-    // this.#renderCreationForm();
+    this.#renderAddButton();
     this.#renderRoutePointList();
-    this.#renderRoutePoints(events);
+    this.#renderRoute();
+    this.#handleNewEventClick();
   };
 
+  #handleNewEventClick = () => {
+    this.#addButtonView.setAddButtonClickHandler(() => {
+      this.#resetActivesForms();
+      this.#renderCreationForm();
+    });
+  };
+
+  #renderRoute() {
+    this.#renderRouteInfo();
+    this.#renderRoutePoints();
+  }
+
   #renderRouteInfo = () => {
-    const tripMainElement = document.querySelector(".trip-main");
-    render(tripMainElement, this.#routeInfoView, RenderPosition.AFTERBEGIN);
+    this.#routeInfoPresenter.init(this.events);
+  };
+
+  #renderRoutePoints = () => {
+    this.events.forEach((event) => {
+      const routePointPresenter = new RoutePointPresenter(
+        this.#routePointListView,
+        this.#handleViewAction,
+        this.#handleModeChange
+      );
+      routePointPresenter.init(event);
+      this.#routePointPresenters.set(event.id, routePointPresenter);
+    });
+  };
+
+  #clearRouteInfo = () => {
+    this.#routeInfoPresenter.destroy();
+  };
+
+  #clearRoutePoints = () => {
+    this.#routePointPresenters.forEach((presenter) => {
+      presenter.destroy();
+    });
+    this.#routePointPresenters = new Map();
+  };
+
+  #updateRoute = () => {
+    this.#updateRouteInfo();
+    this.#updateRoutePoints();
+  };
+
+  #updateRouteInfo = () => {
+    this.#clearRouteInfo();
+    this.#renderRouteInfo();
+  };
+
+  #updateRoutePoints = () => {
+    this.#clearRoutePoints();
+    this.#renderRoutePoints();
   };
 
   #renderNavigationMenu = () => {
@@ -57,9 +116,17 @@ export default class RoutePresenter {
     render(tripEventsElement, this.#sortFormView);
   };
 
+  #renderAddButton = () => {
+    const tripMainElement = document.querySelector(".trip-main");
+    render(tripMainElement, this.#addButtonView);
+  };
+
   #renderCreationForm = () => {
-    const tripEventsElement = document.querySelector(".trip-events");
-    render(tripEventsElement, this.#creationFormView);
+    render(
+      this.#routePointListView,
+      this.#creationFormView,
+      RenderPosition.AFTERBEGIN
+    );
   };
 
   #renderRoutePointList = () => {
@@ -67,25 +134,44 @@ export default class RoutePresenter {
     render(tripEventsElement, this.#routePointListView);
   };
 
-  #renderRoutePoints = (events) => {
-    events.forEach((event) => {
-      const routePointPresenter = new RoutePointPresenter(
-        this.#routePointListView,
-        this.#handleRoutePointChange,
-        this.#handleModeChange
-      );
-      routePointPresenter.init(event);
-      this.#routePointPresenters.set(event.id, routePointPresenter);
-    });
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this.#routeModel.updateEvent(updateType, update);
+        break;
+      case UserAction.ADD_EVENT:
+        this.#routeModel.addEvent(updateType, update);
+        break;
+      case UserAction.DELETE_EVENT:
+        this.#routeModel.deleteEvent(updateType, update);
+        break;
+    }
   };
 
-  #handleRoutePointChange = (updatedEvent) => {
-    console.log(updatedEvent)
-    this.#events = updateItem(this.#events, updatedEvent);
-    this.#routePointPresenters.get(updatedEvent.id).init(updatedEvent);
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#routePointPresenters.get(data.id).init(data);
+        this.#updateRouteInfo();
+        break;
+      case UpdateType.MINOR:
+        this.#updateRoute();
+        break;
+      case UpdateType.MAJOR:
+        break;
+    }
   };
 
   #handleModeChange = () => {
+    this.#resetActivesForms();
+  };
+
+  #resetActivesForms = () => {
+    this.#closeCreationForm();
     this.#routePointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #closeCreationForm = () => {
+    remove(this.#creationFormView);
   };
 }

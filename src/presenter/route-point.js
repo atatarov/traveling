@@ -4,6 +4,7 @@ import OfferTitleView from "../view/offers-title-view";
 import RoutePointEditView from "../view/route-point-edit-view";
 import RoutePointView from "../view/route-point-view";
 import OfferView from "../view/offer-view";
+import { UpdateType, UserAction } from "../const";
 
 const Mode = {
   DEFAULT: "DEFAULT",
@@ -43,9 +44,10 @@ export default class RoutePointPresenter {
     this.#handleRouteEditRollupClick();
     this.#handleFavoriteClick();
     this.#handleSaveClick();
+    this.#handleDeleteClick();
 
     if (prevRoutePoint === null || prevRoutePointEdit === null) {
-      this.#renderRoutePoint(event);
+      this.#renderRoutePoint();
       this.#renderOffers(event);
       return;
     }
@@ -102,7 +104,7 @@ export default class RoutePointPresenter {
     render(container, this.#offersView, RenderPosition.BEFOREBEGIN);
   };
 
-  #renderRoutePoint = (event) => {
+  #renderRoutePoint = () => {
     render(this.#routePointListContainer, this.#routePoint);
   };
 
@@ -120,14 +122,23 @@ export default class RoutePointPresenter {
 
   #handleFavoriteClick = () => {
     this.#routePoint.setFavoriteClickHandler(() => {
-      this.#changeData({ ...this.#event, isFavorite: !this.#event.isFavorite });
+      this.#changeData(UserAction.UPDATE_EVENT, UpdateType.PATCH, {
+        ...this.#event,
+        isFavorite: !this.#event.isFavorite,
+      });
     });
   };
 
   #handleSaveClick = () => {
     this.#routePointEdit.setSaveButtonClickHandler((data) => {
-      this.#changeData(data);
+      this.#changeData(UserAction.UPDATE_EVENT, UpdateType.PATCH, data);
       this.#replaceEditToDefault();
+    });
+  };
+
+  #handleDeleteClick = () => {
+    this.#routePointEdit.setDeleteButtonClickHandler((data) => {
+      this.#changeData(UserAction.DELETE_EVENT, UpdateType.MINOR, data);
     });
   };
 
