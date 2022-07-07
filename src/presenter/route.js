@@ -39,8 +39,8 @@ export default class RoutePresenter {
     this.#renderSortForm();
     this.#renderAddButton();
     this.#renderRoutePointList();
-    this.#renderRoute();
     this.#handleNewEventClick();
+    this.#routeModel.init();
   };
 
   #handleNewEventClick = () => {
@@ -50,7 +50,7 @@ export default class RoutePresenter {
     });
   };
 
-  #renderRoute() {
+  #renderRouteContent() {
     this.#renderRouteInfo();
     this.#renderRoutePoints();
   }
@@ -159,6 +159,8 @@ export default class RoutePresenter {
         break;
       case UpdateType.MAJOR:
         break;
+      case UpdateType.INIT:
+        this.#renderRouteContent();
     }
   };
 

@@ -156,9 +156,29 @@ const createEventFieldPriceTemplate = (price) => {
     </div>`
   );
 };
+
+export const createPhotosTemplate = (photos) => {
+  return (
+   `<div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${photos.map((photo) => {
+          return (
+            `<img
+              class="event__photo"
+              src=${photo.src}
+              alt="Event photo"
+            />`
+          );
+        })}
+      </div>
+    </div>`
+  );
+};
+
 export const createRoutePointEditTemplate = ({ price, offerType, place, offer }) => {
   const type = `${upCaseFirst(offerType.name)}`
   const destination = `${upCaseFirst(place.name)}`
+  const description = place.description;
 
   return (
    `<li class="trip-events__item">
@@ -214,11 +234,9 @@ export const createRoutePointEditTemplate = ({ price, offerType, place, offer })
               Destination
             </h3>
             <p class="event__destination-description">
-              Chamonix-Mont-Blanc (usually shortened to Chamonix) is a resort
-              area near the junction of France, Switzerland and Italy. At the
-              base of Mont Blanc, the highest summit in the Alps, it's renowned
-              for its skiing.
+            ${description}
             </p>
+            ${createPhotosTemplate(place.photos)}
           </section>
         </section>
       </form>

@@ -1,7 +1,28 @@
+import { UpdateType } from "../const";
 import AbstractObservable from "../utils/abstract-observable";
+import Adapter from "../utils/adapter";
 
 export default class RouteModel extends AbstractObservable {
   #events = [];
+  #apiService = null;
+
+  constructor(apiService) {
+    super();
+
+    this.#apiService = apiService;
+  }
+
+  init = async () => {
+    try {
+      const events = await this.#apiService.events;
+      console.log(events)
+      this.#events = events.map((event) => Adapter.adaptEventToClient(event));
+    } catch (error) {
+      this.#events = [];
+    }
+
+    this._notify(UpdateType.INIT);
+  };
 
   set events(events) {
     this.#events = [...events];

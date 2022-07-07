@@ -1,15 +1,11 @@
-import { generateEvent } from "./mock/event";
+import ApiService from "./api-service";
 import RouteModel from "./model/route-model";
 import RoutePresenter from "./presenter/route";
 
-const EVENT_COUNT = 16;
-const events = new Array(EVENT_COUNT)
-  .fill(``)
-  .map(generateEvent)
-  .sort((a, b) => a.startDate - b.startDate);
+const AUTHORIZATION = "Basic flknzxdsffhsdf";
+const END_POINT = "https://16.ecmascript.pages.academy/big-trip";
 
-const routeModel = new RouteModel();
-routeModel.events = events;
+const routeModel = new RouteModel(new ApiService(END_POINT, AUTHORIZATION));
 
 const routePresenter = new RoutePresenter(routeModel);
 routePresenter.init();
