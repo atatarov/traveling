@@ -1,4 +1,3 @@
-import Adapter from "../utils/adapter";
 import ApiService from "../api-service";
 import { AUTHORIZATION, END_POINT } from "../const";
 

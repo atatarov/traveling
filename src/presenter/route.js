@@ -8,8 +8,6 @@ import SortFormView from "../view/sort-form-view";
 import RoutePointPresenter from "./route-point";
 import RouteInfoPresenter from "./route-info";
 import AddButtonView from "../view/add-button-view";
-import Destinations from "../common/destinations";
-import Offers from "../common/offers";
 
 export default class RoutePresenter {
   #routeModel = null;

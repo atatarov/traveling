@@ -300,6 +300,12 @@ export default class RoutePointEditView extends SmartView {
     this.element
       .querySelector(".event__type-group")
       .addEventListener("input", this.#typeInputHandler);
+
+    this.element
+      .querySelectorAll(".event__offer-checkbox")
+      .forEach((offerCheckbox) => {
+        offerCheckbox.addEventListener("input", this.#offerInputHandler);
+      });
   };
 
   #typeInputHandler = (event) => {
@@ -307,19 +313,33 @@ export default class RoutePointEditView extends SmartView {
     const value = event.target.value;
     const offer = {
       value,
-      offers: Offers.getInstance().getOffersByType(value)
-    }
+      offers: Offers.getInstance().getOffersByType(value),
+    };
     this.updateData({
       offerType: getOfferTypeByName(value),
       offer,
     });
   };
 
+  #offerInputHandler = (event) => {
+    event.preventDefault();
+
+    const offer = { ...this._state.offer };
+
+    offer.offers.forEach((item) => {
+      if (`event-offer-${item.id}` === event.target.id) {
+        item.checked = !item.checked;
+      }
+    });
+
+    this.updateData({ offer });
+  };
+
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setRollupClickHandler(this._callback.rollupClick);
     this.setSaveButtonClickHandler(this._callback.saveClick);
-    this.setDeleteButtonClickHandler(this._callback.deleteClick)
+    this.setDeleteButtonClickHandler(this._callback.deleteClick);
   };
 
   static parseEventToState = (event) => {
