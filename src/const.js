@@ -12,6 +12,7 @@ export const MONTHS = [
   `NOV`,
   `DEC`,
 ];
+
 export const UserAction = {
   UPDATE_EVENT: "UPDATE_EVENT",
   ADD_EVENT: "ADD_EVENT",
@@ -24,3 +25,7 @@ export const UpdateType = {
   MAJOR: "MAJOR",
   INIT: "INIT",
 };
+
+export const AUTHORIZATION = "Basic flknzxdsffhsdf";
+
+export const END_POINT = "https://16.ecmascript.pages.academy/big-trip";

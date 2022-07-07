@@ -15,7 +15,6 @@ export default class RouteModel extends AbstractObservable {
   init = async () => {
     try {
       const events = await this.#apiService.events;
-      console.log(events)
       this.#events = events.map((event) => Adapter.adaptEventToClient(event));
     } catch (error) {
       this.#events = [];

@@ -9,11 +9,7 @@ export default class Adapter {
       offers: event["offers"],
     };
 
-    const place = {
-      name: event.destination["name"],
-      description: event.destination["description"],
-      photos: event.destination["pictures"],
-    };
+    const place = this.adaptDestinationToClient(event.destination)
 
     const adaptedEvent = {
       id: event["id"],
@@ -30,11 +26,7 @@ export default class Adapter {
   };
 
   static adaptEventToServer = (event) => {
-    const destination = {
-      name: event.place.name,
-      description: event.place.description,
-      pictures: event.place.photos,
-    };
+    const destination = this.adaptDestinationToServer(event.destination);
 
     const adaptedEvent = {
       base_price: event["price"],
@@ -48,5 +40,21 @@ export default class Adapter {
     };
 
     return adaptedEvent;
+  };
+
+  static adaptDestinationToClient = (destination) => {
+    return {
+      name: destination.name,
+      description: destination.description,
+      photos: destination.pictures,
+    };
+  };
+
+  static adaptDestinationToServer = (destination) => {
+    return {
+      name: destination.name,
+      description: destination.description,
+      pictures: destination.photos,
+    };
   };
 }

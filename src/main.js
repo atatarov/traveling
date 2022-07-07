@@ -1,11 +1,15 @@
 import ApiService from "./api-service";
+import Destinations from "./common/destinations";
+import Offers from "./common/offers";
+import { AUTHORIZATION, END_POINT } from "./const";
 import RouteModel from "./model/route-model";
 import RoutePresenter from "./presenter/route";
 
-const AUTHORIZATION = "Basic flknzxdsffhsdf";
-const END_POINT = "https://16.ecmascript.pages.academy/big-trip";
+const api = new ApiService(END_POINT, AUTHORIZATION);
+const routeModel = new RouteModel(api);
 
-const routeModel = new RouteModel(new ApiService(END_POINT, AUTHORIZATION));
+Destinations.getInstance();
+Offers.getInstance();
 
 const routePresenter = new RoutePresenter(routeModel);
 routePresenter.init();

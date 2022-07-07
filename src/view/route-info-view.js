@@ -31,10 +31,15 @@ export const createRouteInfoTemplate = (events) => {
 
   const datePair = formatDatePair(startDate, finishDate);
 
+  const tripInfoTitle =
+    places.length > 3
+      ? `${places[0]} &mdash; ... &mdash; ${places[places.length - 1]}`
+      : `${places.join(` &mdash; `)}`;
+
   return (
    `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
-        <h1 class="trip-info__title">${places.join(` &mdash; `)}</h1>
+        <h1 class="trip-info__title">${tripInfoTitle}</h1>
 
         <p class="trip-info__dates">${datePair}</p>
       </div>

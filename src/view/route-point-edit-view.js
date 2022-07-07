@@ -1,5 +1,5 @@
+import Offers from "../common/offers";
 import { getOfferTypeByName, offerTypes } from "../mock/event";
-import { offersByType } from "../mock/offers";
 import { upCaseFirst } from "../utils/utils";
 import SmartView from "./smart-view";
 
@@ -305,9 +305,13 @@ export default class RoutePointEditView extends SmartView {
   #typeInputHandler = (event) => {
     event.preventDefault();
     const value = event.target.value;
+    const offer = {
+      value,
+      offers: Offers.getInstance().getOffersByType(value)
+    }
     this.updateData({
       offerType: getOfferTypeByName(value),
-      offer: offersByType[value],
+      offer,
     });
   };
 
