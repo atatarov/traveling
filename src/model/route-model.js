@@ -63,18 +63,24 @@ export default class RouteModel extends AbstractObservable {
     this._notify(updateType, update);
   };
 
-  deleteEvent = (updateType, update) => {
+  deleteEvent = async (updateType, update) => {
     const index = this.#events.findIndex((event) => event.id === update.id);
 
     if (index === -1) {
-      throw new Error("Can't delete unexisting task");
+      throw new Error("Can't delete unexisting event");
     }
 
-    this.#events = [
-      ...this.#events.slice(0, index),
-      ...this.#events.slice(index + 1),
-    ];
+    try {
+      await this.#apiService.deleteEvent(update);
 
-    this._notify(updateType);
+      this.#events = [
+        ...this.#events.slice(0, index),
+        ...this.#events.slice(index + 1),
+      ];
+
+      this._notify(updateType);
+    } catch (error) {
+      throw new Error("Can't delete event");
+    }
   };
 }

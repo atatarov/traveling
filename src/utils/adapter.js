@@ -1,4 +1,4 @@
-import { getOfferTypeByName } from "../mock/event";
+import { getOfferTypeByName } from "./utils";
 
 export default class Adapter {
   static adaptEventToClient = (event) => {

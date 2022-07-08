@@ -3,6 +3,7 @@ import Adapter from "./utils/adapter";
 const Method = {
   GET: "GET",
   PUT: "PUT",
+  DELETE: "DELETE",
 };
 
 export default class ApiService {
@@ -34,6 +35,15 @@ export default class ApiService {
       headers: new Headers({ "Content-Type": "application/json" }),
     });
     return ApiService.parseResponse(response);
+  };
+
+  deleteEvent = async (event) => {
+    const response = await this.#load({
+      url: `points/${event.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   };
 
   #load = async ({

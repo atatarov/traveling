@@ -1,6 +1,6 @@
 import Offers from "../common/offers";
-import { getOfferTypeByName, offerTypes } from "../mock/event";
-import { upCaseFirst } from "../utils/utils";
+import { offerTypes } from "../const";
+import { getOfferTypeByName, upCaseFirst } from "../utils/utils";
 import SmartView from "./smart-view";
 
 const BLANK_EVENT = {
