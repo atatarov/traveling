@@ -31,7 +31,7 @@ export default class RouteModel extends AbstractObservable {
     return this.#events;
   }
 
-  updateEvent = (updateType, update) => {
+  updateEvent = async (updateType, update) => {
     const index = this.#events.findIndex((item) => {
       return item.id === update.id;
     });
@@ -40,13 +40,21 @@ export default class RouteModel extends AbstractObservable {
       throw new Error("Can't update unexisting event");
     }
 
-    this.#events = [
-      ...this.#events.slice(0, index),
-      update,
-      ...this.#events.slice(index + 1),
-    ];
+    try {
+      const response = await this.#apiService.updateEvent(update);
 
-    this._notify(updateType, update);
+      const updatedEvent = Adapter.adaptEventToClient(response);
+
+      this.#events = [
+        ...this.#events.slice(0, index),
+        updatedEvent,
+        ...this.#events.slice(index + 1),
+      ];
+
+      this._notify(updateType, update);
+    } catch (error) {
+      throw new Error("Can't update event");
+    }
   };
 
   addEvent = (updateType, update) => {

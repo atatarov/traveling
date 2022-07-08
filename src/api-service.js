@@ -1,3 +1,5 @@
+import Adapter from "./utils/adapter";
+
 const Method = {
   GET: "GET",
   PUT: "PUT",
@@ -28,12 +30,10 @@ export default class ApiService {
     const response = await this.#load({
       url: `points/${event.id}`,
       method: Method.PUT,
-      body: JSON.stringify(event),
+      body: JSON.stringify(Adapter.adaptEventToServer(event)),
       headers: new Headers({ "Content-Type": "application/json" }),
     });
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
+    return ApiService.parseResponse(response);
   };
 
   #load = async ({

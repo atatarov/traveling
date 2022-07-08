@@ -9,7 +9,7 @@ export default class Adapter {
       offers: event["offers"],
     };
 
-    const place = this.adaptDestinationToClient(event.destination)
+    const place = this.adaptDestinationToClient(event.destination);
 
     const adaptedEvent = {
       id: event["id"],
@@ -26,7 +26,7 @@ export default class Adapter {
   };
 
   static adaptEventToServer = (event) => {
-    const destination = this.adaptDestinationToServer(event.destination);
+    const destination = Adapter.adaptDestinationToServer(event.place);
 
     const adaptedEvent = {
       base_price: event["price"],
