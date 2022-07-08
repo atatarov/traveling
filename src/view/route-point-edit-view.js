@@ -1,6 +1,6 @@
-import { getOfferTypeByName, offerTypes } from "../mock/event";
-import { offersByType } from "../mock/offers";
-import { upCaseFirst } from "../utils/utils";
+import Offers from "../common/offers";
+import { offerTypes } from "../const";
+import { getOfferTypeByName, upCaseFirst } from "../utils/utils";
 import SmartView from "./smart-view";
 
 const BLANK_EVENT = {
@@ -156,9 +156,29 @@ const createEventFieldPriceTemplate = (price) => {
     </div>`
   );
 };
+
+export const createPhotosTemplate = (photos) => {
+  return (
+   `<div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${photos.map((photo) => {
+          return (
+            `<img
+              class="event__photo"
+              src=${photo.src}
+              alt="Event photo"
+            />`
+          );
+        })}
+      </div>
+    </div>`
+  );
+};
+
 export const createRoutePointEditTemplate = ({ price, offerType, place, offer }) => {
   const type = `${upCaseFirst(offerType.name)}`
   const destination = `${upCaseFirst(place.name)}`
+  const description = place.description;
 
   return (
    `<li class="trip-events__item">
@@ -214,11 +234,9 @@ export const createRoutePointEditTemplate = ({ price, offerType, place, offer })
               Destination
             </h3>
             <p class="event__destination-description">
-              Chamonix-Mont-Blanc (usually shortened to Chamonix) is a resort
-              area near the junction of France, Switzerland and Italy. At the
-              base of Mont Blanc, the highest summit in the Alps, it's renowned
-              for its skiing.
+            ${description}
             </p>
+            ${createPhotosTemplate(place.photos)}
           </section>
         </section>
       </form>
@@ -282,22 +300,46 @@ export default class RoutePointEditView extends SmartView {
     this.element
       .querySelector(".event__type-group")
       .addEventListener("input", this.#typeInputHandler);
+
+    this.element
+      .querySelectorAll(".event__offer-checkbox")
+      .forEach((offerCheckbox) => {
+        offerCheckbox.addEventListener("input", this.#offerInputHandler);
+      });
   };
 
   #typeInputHandler = (event) => {
     event.preventDefault();
     const value = event.target.value;
+    const offer = {
+      value,
+      offers: Offers.getInstance().getOffersByType(value),
+    };
     this.updateData({
       offerType: getOfferTypeByName(value),
-      offer: offersByType[value],
+      offer,
     });
+  };
+
+  #offerInputHandler = (event) => {
+    event.preventDefault();
+
+    const offer = { ...this._state.offer };
+
+    offer.offers.forEach((item) => {
+      if (`event-offer-${item.id}` === event.target.id) {
+        item.checked = !item.checked;
+      }
+    });
+
+    this.updateData({ offer });
   };
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setRollupClickHandler(this._callback.rollupClick);
     this.setSaveButtonClickHandler(this._callback.saveClick);
-    this.setDeleteButtonClickHandler(this._callback.deleteClick)
+    this.setDeleteButtonClickHandler(this._callback.deleteClick);
   };
 
   static parseEventToState = (event) => {
