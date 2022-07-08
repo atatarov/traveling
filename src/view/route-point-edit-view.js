@@ -1,3 +1,4 @@
+import Destinations from "../common/destinations"
 import Offers from "../common/offers";
 import { offerTypes } from "../const";
 import { getOfferTypeByName, upCaseFirst } from "../utils/utils";
@@ -80,15 +81,24 @@ const createAvailableOfferTemplate = ({ id, title, price, checked }) => {
 
 const createAvailableOffersTemplate = (offers) => {
   return (
-   `<div class="event__available-offers">
-      ${offers.map((offer) => {
-        return createAvailableOfferTemplate(offer);
-      }).join(``)}
-    </div>`
+   `<section class="event__section event__section--offers">
+      <h3 class="event__section-title event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${offers
+          .map((offer) => {
+            return createAvailableOfferTemplate(offer);
+          })
+          .join(``)}
+      </div>
+    </section>`
   );
 };
 
 const createEventFieldDestinationTemplate = (type, destination) => {
+  const validationPattern = Destinations.getInstance().getValidationPattern();
+  const destinationOptions =
+    Destinations.getInstance().getDestinationsOptionsTemplate();
+
   return (
    `<div class="event__field-group event__field-group--destination">
       <label class="event__label event__type-output" for="event-destination-1">
@@ -101,12 +111,10 @@ const createEventFieldDestinationTemplate = (type, destination) => {
         name="event-destination"
         value="${destination}"
         list="destination-list-1"
+        required
+        pattern="${validationPattern}"
       />
-      <datalist id="destination-list-1">
-        <option value="Amsterdam"></option>
-        <option value="Geneva"></option>
-        <option value="Chamonix"></option>
-      </datalist>
+      <datalist id="destination-list-1">${destinationOptions}</datalist>
     </div>`
   );
 };
@@ -149,9 +157,10 @@ const createEventFieldPriceTemplate = (price) => {
       <input
         class="event__input event__input--price"
         id="event-price-1"
-        type="text"
+        type="number"
         name="event-price"
         value=${price}
+        required
       />
     </div>`
   );
@@ -222,20 +231,14 @@ export const createRoutePointEditTemplate = ({ price, offerType, place, offer })
           </button>
         </header>
         <section class="event__details">
-          <section class="event__section event__section--offers">
-            <h3 class="event__section-title event__section-title--offers">
-              Offers
-            </h3>
-            ${createAvailableOffersTemplate(offer.offers)}
-          </section>
-
+          ${offer.offers.length > 0
+            ? createAvailableOffersTemplate(offer.offers)
+            : ``}
           <section class="event__section event__section--destination">
             <h3 class="event__section-title event__section-title--destination">
               Destination
             </h3>
-            <p class="event__destination-description">
-            ${description}
-            </p>
+            <p class="event__destination-description">${description}</p>
             ${createPhotosTemplate(place.photos)}
           </section>
         </section>
@@ -306,6 +309,22 @@ export default class RoutePointEditView extends SmartView {
       .forEach((offerCheckbox) => {
         offerCheckbox.addEventListener("input", this.#offerInputHandler);
       });
+
+    this.element
+      .querySelector("input[name=event-destination]")
+      .addEventListener("change", this.#destinationInputHandler);
+  };
+
+  #destinationInputHandler = (event) => {
+    event.preventDefault();
+
+    if (event.target.validity.valid) {
+      this.updateData({
+        place: Destinations.getInstance().getDestinationByName(
+          event.target.value
+        ),
+      });
+    }
   };
 
   #typeInputHandler = (event) => {
