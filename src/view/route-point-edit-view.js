@@ -6,7 +6,10 @@ import SmartView from "./smart-view";
 
 const BLANK_EVENT = {
   eventType: `taxi`,
-  offers: [],
+  offer: {
+    type: "taxi",
+    offers: [],
+  },
   finishDate: new Date(),
   startDate: new Date(),
   price: 0,
@@ -250,8 +253,8 @@ export const createRoutePointEditTemplate = ({ price, offerType, place, offer })
 export default class RoutePointEditView extends SmartView {
   constructor(event = BLANK_EVENT) {
     super();
-
     this._state = RoutePointEditView.parseEventToState(event);
+
     this.#setInnerHandlers();
   }
 
@@ -344,7 +347,7 @@ export default class RoutePointEditView extends SmartView {
     event.preventDefault();
 
     const offer = { ...this._state.offer };
-
+    
     offer.offers.forEach((item) => {
       if (`event-offer-${item.id}` === event.target.id) {
         item.checked = !item.checked;
@@ -362,14 +365,19 @@ export default class RoutePointEditView extends SmartView {
   };
 
   static parseEventToState = (event) => {
-    return { ...event };
+    const parsedEvent = JSON.parse(JSON.stringify(event))
+    parsedEvent.startDate = new Date(parsedEvent.startDate)
+    parsedEvent.finishDate = new Date(parsedEvent.finishDate)
+
+    return parsedEvent;
   };
 
   static parseStateToEvent = (state) => {
-    const offerType = { ...state.offerType };
-    const event = { ...state, offerType };
+    const parsedState = JSON.parse(JSON.stringify(state))
+    parsedState.startDate = new Date(parsedState.startDate)
+    parsedState.finishDate = new Date(parsedState.finishDate)
 
-    return event;
+    return parsedState;
   };
 
   reset = (event) => {

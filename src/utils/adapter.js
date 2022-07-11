@@ -27,7 +27,6 @@ export default class Adapter {
 
   static adaptEventToServer = (event) => {
     const destination = Adapter.adaptDestinationToServer(event.place);
-
     const adaptedEvent = {
       base_price: event["price"],
       date_from: event["startDate"].toISOString(),
