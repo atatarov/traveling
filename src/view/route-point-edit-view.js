@@ -316,6 +316,16 @@ export default class RoutePointEditView extends SmartView {
     this.element
       .querySelector("input[name=event-destination]")
       .addEventListener("change", this.#destinationInputHandler);
+
+    this.element
+      .querySelector(".event__input--price")
+      .addEventListener("input", this.#priceInputHandler);
+  };
+
+  #priceInputHandler = (event) => {
+    event.preventDefault();
+
+    this.updateData({ price: Number(event.target.value) }, true);
   };
 
   #destinationInputHandler = (event) => {
@@ -347,7 +357,7 @@ export default class RoutePointEditView extends SmartView {
     event.preventDefault();
 
     const offer = { ...this._state.offer };
-    
+
     offer.offers.forEach((item) => {
       if (`event-offer-${item.id}` === event.target.id) {
         item.checked = !item.checked;
@@ -365,17 +375,17 @@ export default class RoutePointEditView extends SmartView {
   };
 
   static parseEventToState = (event) => {
-    const parsedEvent = JSON.parse(JSON.stringify(event))
-    parsedEvent.startDate = new Date(parsedEvent.startDate)
-    parsedEvent.finishDate = new Date(parsedEvent.finishDate)
+    const parsedEvent = JSON.parse(JSON.stringify(event));
+    parsedEvent.startDate = new Date(parsedEvent.startDate);
+    parsedEvent.finishDate = new Date(parsedEvent.finishDate);
 
     return parsedEvent;
   };
 
   static parseStateToEvent = (state) => {
-    const parsedState = JSON.parse(JSON.stringify(state))
-    parsedState.startDate = new Date(parsedState.startDate)
-    parsedState.finishDate = new Date(parsedState.finishDate)
+    const parsedState = JSON.parse(JSON.stringify(state));
+    parsedState.startDate = new Date(parsedState.startDate);
+    parsedState.finishDate = new Date(parsedState.finishDate);
 
     return parsedState;
   };
