@@ -57,10 +57,17 @@ export default class RouteModel extends AbstractObservable {
     }
   };
 
-  addEvent = (updateType, update) => {
-    this.#events = [update, ...this.#events];
+  addEvent = async (updateType, update) => {
+    try {
+      const response = await this.#apiService.addEvent(update);
+      const newEvent = Adapter.adaptEventToClient(response);
 
-    this._notify(updateType, update);
+      this.#events = [newEvent, ...this.#events];
+
+      this._notify(updateType, newEvent);
+    } catch (error) {
+      throw new Error("Can't add event");
+    }
   };
 
   deleteEvent = async (updateType, update) => {

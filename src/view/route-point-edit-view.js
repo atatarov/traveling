@@ -5,7 +5,7 @@ import { getOfferTypeByName, upCaseFirst } from "../utils/utils";
 import SmartView from "./smart-view";
 
 const BLANK_EVENT = {
-  eventType: `taxi`,
+  offerType: getOfferTypeByName("taxi"),
   offer: {
     type: "taxi",
     offers: [],
@@ -164,6 +164,7 @@ const createEventFieldPriceTemplate = (price) => {
         name="event-price"
         value=${price}
         required
+        min="1"
       />
     </div>`
   );
@@ -181,13 +182,21 @@ export const createPhotosTemplate = (photos) => {
               alt="Event photo"
             />`
           );
-        })}
+        }).join('')}
       </div>
     </div>`
   );
 };
 
-export const createRoutePointEditTemplate = ({ price, offerType, place, offer }) => {
+export const createRollupButtonTempalte = () => {
+  return (
+   `<button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>`
+  );
+};
+
+export const createRoutePointEditTemplate = ({ price, offerType, place, offer, newEvent }) => {
   const type = `${upCaseFirst(offerType.name)}`
   const destination = `${upCaseFirst(place.name)}`
   const description = place.description;
@@ -227,11 +236,9 @@ export const createRoutePointEditTemplate = ({ price, offerType, place, offer })
             Save
           </button>
           <button class="event__reset-btn" type="reset">
-            Delete
+            ${newEvent ? `Cancel` : `Delete`}
           </button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          ${newEvent ? `` : createRollupButtonTempalte()}
         </header>
         <section class="event__details">
           ${offer.offers.length > 0
@@ -253,6 +260,15 @@ export const createRoutePointEditTemplate = ({ price, offerType, place, offer })
 export default class RoutePointEditView extends SmartView {
   constructor(event = BLANK_EVENT) {
     super();
+
+    if (event.newEvent) {
+      event.offer.offers = Offers.getInstance().getOffersByType("taxi");
+      const [firstValue] = Destinations.getInstance()
+        .getDestinations()
+        .values();
+      event.place = firstValue;
+    }
+
     this._state = RoutePointEditView.parseEventToState(event);
 
     this.#setInnerHandlers();
@@ -266,7 +282,7 @@ export default class RoutePointEditView extends SmartView {
     this._callback.rollupClick = callback;
     this.element
       .querySelector(".event__rollup-btn")
-      .addEventListener("click", this.#rollupClickHandler);
+      ?.addEventListener("click", this.#rollupClickHandler);
   };
 
   setSaveButtonClickHandler = (callback) => {
@@ -292,6 +308,12 @@ export default class RoutePointEditView extends SmartView {
 
   #saveButtonHandler = (event) => {
     event.preventDefault();
+
+    if (this._state.newEvent) {
+      delete this._state.newEvent;
+      delete this._state.id;
+    }
+
     this._callback.saveClick(RoutePointEditView.parseStateToEvent(this._state));
   };
 
@@ -325,7 +347,9 @@ export default class RoutePointEditView extends SmartView {
   #priceInputHandler = (event) => {
     event.preventDefault();
 
-    this.updateData({ price: Number(event.target.value) }, true);
+    if (event.target.validity.valid) {
+      this.updateData({ price: Number(event.target.value) }, true);
+    }
   };
 
   #destinationInputHandler = (event) => {
@@ -344,7 +368,7 @@ export default class RoutePointEditView extends SmartView {
     event.preventDefault();
     const value = event.target.value;
     const offer = {
-      value,
+      type: value,
       offers: Offers.getInstance().getOffersByType(value),
     };
     this.updateData({
