@@ -110,6 +110,7 @@ export default class RoutePointPresenter {
 
   #handleRouteEditRollupClick = () => {
     this.#routePointEdit.setRollupClickHandler(() => {
+      this.#routePointEdit.reset(this.#event);
       this.#replaceEditToDefault();
     });
   };

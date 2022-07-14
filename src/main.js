@@ -7,9 +7,11 @@ import RoutePresenter from "./presenter/route";
 
 const api = new ApiService(END_POINT, AUTHORIZATION);
 const routeModel = new RouteModel(api);
-
-Destinations.getInstance();
-Offers.getInstance();
-
 const routePresenter = new RoutePresenter(routeModel);
-routePresenter.init();
+
+Promise.all([
+  Destinations.getInstance().init(api),
+  Offers.getInstance().init(api),
+]).then(() => {
+  routePresenter.init();
+});

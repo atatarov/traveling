@@ -1,6 +1,5 @@
-import { remove, render, RenderPosition } from "../render";
+import { render } from "../render";
 import { UpdateType, UserAction } from "../const";
-import CreationFormView from "../view/creation-form-view";
 import FilterFormView from "../view/filter-form-view";
 import NavigationMenuView from "../view/navigation-menu-view";
 import RoutePointListView from "../view/route-point-list-view";
@@ -8,18 +7,19 @@ import SortFormView from "../view/sort-form-view";
 import RoutePointPresenter from "./route-point";
 import RouteInfoPresenter from "./route-info";
 import AddButtonView from "../view/add-button-view";
+import RoutePointNewPresenter from "./route-point-new";
 
 export default class RoutePresenter {
   #routeModel = null;
   #navigationMenuView = new NavigationMenuView();
   #filterFormView = new FilterFormView();
   #sortFormView = new SortFormView();
-  #creationFormView = new CreationFormView();
   #routePointListView = new RoutePointListView();
   #addButtonView = new AddButtonView();
 
   #routePointPresenters = new Map();
   #routeInfoPresenter = null;
+  #routePointNewPresenter = null;
 
   constructor(model) {
     this.#routeModel = model;
@@ -46,7 +46,11 @@ export default class RoutePresenter {
   #handleNewEventClick = () => {
     this.#addButtonView.setAddButtonClickHandler(() => {
       this.#resetActivesForms();
-      this.#renderCreationForm();
+      this.#routePointNewPresenter = new RoutePointNewPresenter(
+        this.#routePointListView,
+        this.#handleViewAction
+      );
+      this.#routePointNewPresenter.init();
     });
   };
 
@@ -121,14 +125,6 @@ export default class RoutePresenter {
     render(tripMainElement, this.#addButtonView);
   };
 
-  #renderCreationForm = () => {
-    render(
-      this.#routePointListView,
-      this.#creationFormView,
-      RenderPosition.AFTERBEGIN
-    );
-  };
-
   #renderRoutePointList = () => {
     const tripEventsElement = document.querySelector(".trip-events");
     render(tripEventsElement, this.#routePointListView);
@@ -174,6 +170,6 @@ export default class RoutePresenter {
   };
 
   #closeCreationForm = () => {
-    remove(this.#creationFormView);
+    this.#routePointNewPresenter?.destroy();
   };
 }

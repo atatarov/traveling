@@ -1,21 +1,14 @@
-import ApiService from "../api-service";
-import { AUTHORIZATION, END_POINT } from "../const";
-
 export default class Offers {
   #offers = new Map();
 
-  constructor(api) {
-    this.#init(api);
-  }
-
   static getInstance() {
     if (!this.instance) {
-      this.instance = new Offers(new ApiService(END_POINT, AUTHORIZATION));
+      this.instance = new Offers();
     }
     return this.instance;
   }
 
-  #init = async (api) => {
+  init = async (api) => {
     try {
       const offers = await api.offers;
       offers.forEach((offer) => {
