@@ -1,8 +1,11 @@
 import Destinations from "../common/destinations"
 import Offers from "../common/offers";
 import { offerTypes } from "../const";
-import { getOfferTypeByName, upCaseFirst } from "../utils/utils";
+import { getOfferTypeByName, humanizeDateInput, upCaseFirst } from "../utils/utils";
 import SmartView from "./smart-view";
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_EVENT = {
   offerType: getOfferTypeByName("taxi"),
@@ -122,7 +125,7 @@ const createEventFieldDestinationTemplate = (type, destination) => {
   );
 };
 
-const createEventFieldTimeTemplate = () => {
+const createEventFieldTimeTemplate = (startDate, finishDate) => {
   return (
    `<div class="event__field-group event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">
@@ -133,7 +136,7 @@ const createEventFieldTimeTemplate = () => {
         id="event-start-time-1"
         type="text"
         name="event-start-time"
-        value="18/03/19 12:25"
+        value="${humanizeDateInput(startDate)}"
       />
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">
@@ -144,7 +147,7 @@ const createEventFieldTimeTemplate = () => {
         id="event-end-time-1"
         type="text"
         name="event-end-time"
-        value="18/03/19 13:35"
+        value="${humanizeDateInput(finishDate)}"
       />
     </div>`
   );
@@ -196,9 +199,17 @@ export const createRollupButtonTempalte = () => {
   );
 };
 
-export const createRoutePointEditTemplate = ({ price, offerType, place, offer, newEvent }) => {
-  const type = `${upCaseFirst(offerType.name)}`
-  const destination = `${upCaseFirst(place.name)}`
+export const createRoutePointEditTemplate = ({
+  price,
+  offerType,
+  place,
+  offer,
+  newEvent,
+  startDate,
+  finishDate,
+}) => {
+  const type = `${upCaseFirst(offerType.name)}`;
+  const destination = `${upCaseFirst(place.name)}`;
   const description = place.description;
 
   return (
@@ -230,7 +241,7 @@ export const createRoutePointEditTemplate = ({ price, offerType, place, offer, n
             </div>
           </div>
           ${createEventFieldDestinationTemplate(type, destination)}
-          ${createEventFieldTimeTemplate()}
+          ${createEventFieldTimeTemplate(startDate, finishDate)}
           ${createEventFieldPriceTemplate(price)}
           <button class="event__save-btn btn btn--blue" type="submit">
             Save
@@ -258,6 +269,9 @@ export const createRoutePointEditTemplate = ({ price, offerType, place, offer, n
 };
 
 export default class RoutePointEditView extends SmartView {
+  #datePickerStart = null;
+  #datePickerFinish = null;
+
   constructor(event = BLANK_EVENT) {
     super();
 
@@ -342,6 +356,8 @@ export default class RoutePointEditView extends SmartView {
     this.element
       .querySelector(".event__input--price")
       .addEventListener("input", this.#priceInputHandler);
+
+    this.#setDatePicker();
   };
 
   #priceInputHandler = (event) => {
@@ -389,6 +405,59 @@ export default class RoutePointEditView extends SmartView {
     });
 
     this.updateData({ offer });
+  };
+
+  #setDatePicker = () => {
+    if (this.#datePickerStart) {
+      this.#datePickerStart.destroy();
+      this.#datePickerStart = null;
+    }
+
+    if (this.#datePickerFinish) {
+      this.#datePickerFinish.destroy();
+      this.#datePickerFinish = null;
+    }
+
+    this.#datePickerStart = flatpickr(
+      this.element.querySelector(`input[name = event-start-time]`),
+      {
+        dateFormat: `d/m/y H:i`,
+        enableTime: true,
+        time_24hr: true,
+        defaultDate: this._state.startDate,
+        onChange: ([startDate]) => {
+          this.updateData({ startDate });
+        },
+      }
+    );
+
+    this.#datePickerFinish = flatpickr(
+      this.element.querySelector(`input[name = event-end-time]`),
+      {
+        dateFormat: `d/m/y H:i`,
+        enableTime: true,
+        time_24hr: true,
+        defaultDate: this._state.finishDate,
+        minDate: this._state.startDate,
+        onChange: ([finishDate]) => {
+          this.updateData({ finishDate });
+        },
+      }
+    );
+  };
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datePickerStart) {
+      this.#datePickerStart.destroy();
+      this.#datePickerStart = null;
+    }
+
+    if (this.#datePickerFinish) {
+      this.#datePickerFinish.destroy();
+      this.#datePickerFinish = null;
+    }
   };
 
   _restoreHandlers = () => {
