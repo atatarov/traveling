@@ -41,3 +41,11 @@ export const offerTypes = [
   { name: `sightseeing`, iconURL: `img/icons/sightseeing.png`, action: `in` },
   { name: `restaurant`, iconURL: `img/icons/restaurant.png`, action: `in` },
 ];
+
+export const SortType = {
+  Day: "day",
+  Event: "event",
+  Time: "time",
+  Price: "price",
+  Offers: "offers",
+};

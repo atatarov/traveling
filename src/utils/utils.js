@@ -1,4 +1,4 @@
-import { MONTHS, offerTypes } from "../const.js";
+import { MONTHS, offerTypes, SortType } from "../const.js";
 // Функция из интернета по генерации случайного числа из диапазона
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
 export const getRandomInteger = (a = 0, b = 1) => {
@@ -76,4 +76,17 @@ export const getOfferTypeByName = (name) => {
   return offerTypes.find((item) => {
     return name === item.name;
   });
+};
+
+const getTimeSpreadFromEvent = (event) => {
+  return event.finishDate.getTime() - event.startDate.getTime();
+};
+
+export const sort = {
+  [SortType.Day]: (events) => events.sort((a, b) => a.firstDate - b.firstDate),
+  [SortType.Price]: (events) => events.sort((a, b) => b.price - a.price),
+  [SortType.Time]: (events) =>
+    events.sort(
+      (a, b) => getTimeSpreadFromEvent(b) - getTimeSpreadFromEvent(a)
+    ),
 };
