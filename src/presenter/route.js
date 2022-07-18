@@ -1,5 +1,5 @@
 import { render } from "../render";
-import { UpdateType, UserAction } from "../const";
+import { SortType, UpdateType, UserAction } from "../const";
 import FilterFormView from "../view/filter-form-view";
 import NavigationMenuView from "../view/navigation-menu-view";
 import RoutePointListView from "../view/route-point-list-view";
@@ -8,18 +8,21 @@ import RoutePointPresenter from "./route-point";
 import RouteInfoPresenter from "./route-info";
 import AddButtonView from "../view/add-button-view";
 import RoutePointNewPresenter from "./route-point-new";
+import { sort } from "../utils/utils";
 
 export default class RoutePresenter {
   #routeModel = null;
   #navigationMenuView = new NavigationMenuView();
   #filterFormView = new FilterFormView();
-  #sortFormView = new SortFormView();
+  #sortFormView = null;
   #routePointListView = new RoutePointListView();
   #addButtonView = new AddButtonView();
 
   #routePointPresenters = new Map();
   #routeInfoPresenter = null;
   #routePointNewPresenter = null;
+
+  #currentSortType = SortType.Day;
 
   constructor(model) {
     this.#routeModel = model;
@@ -28,7 +31,9 @@ export default class RoutePresenter {
   }
 
   get events() {
-    return this.#routeModel.events;
+    const events = this.#routeModel.events.slice();
+
+    return sort[this.#currentSortType](events);
   }
 
   init = () => {
@@ -60,7 +65,7 @@ export default class RoutePresenter {
   }
 
   #renderRouteInfo = () => {
-    this.#routeInfoPresenter.init(this.events);
+    this.#routeInfoPresenter.init(this.#routeModel.events);
   };
 
   #renderRoutePoints = () => {
@@ -117,6 +122,9 @@ export default class RoutePresenter {
 
   #renderSortForm = () => {
     const tripEventsElement = document.querySelector(".trip-events");
+    this.#sortFormView = new SortFormView(this.#currentSortType);
+
+    this.#sortFormView.setSortTypeChangeHandler(this.#handleSortTypeChange);
     render(tripEventsElement, this.#sortFormView);
   };
 
@@ -162,6 +170,15 @@ export default class RoutePresenter {
 
   #handleModeChange = () => {
     this.#resetActivesForms();
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#currentSortType = sortType;
+    this.#updateRoute();
   };
 
   #resetActivesForms = () => {
