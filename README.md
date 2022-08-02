@@ -1,2 +1,2 @@
 # traveling
-Simple [project](atatarov.github.io/traveling/) using vanilla JavaScript
+Simple [project](https://atatarov.github.io/traveling/) using vanilla JavaScript
